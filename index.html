@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101510">
+  <title>Night of the Living Dead</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      font-family: Georgia, "Times New Roman", serif;
+      background: #101510;
+      color: #eee9d9;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      overflow: hidden;
+      background: #101510;
+    }
+
+    .scene {
+      position: relative;
+      isolation: isolate;
+      display: grid;
+      min-height: 100svh;
+      place-items: center;
+      overflow: hidden;
+      background:
+        radial-gradient(ellipse at 50% 76%, #273126 0%, #171e19 34%, transparent 68%),
+        linear-gradient(180deg, #080c12 0%, #172127 42%, #262c25 72%, #101510 100%);
+    }
+
+    .scene::before,
+    .scene::after {
+      position: absolute;
+      z-index: -1;
+      content: "";
+      pointer-events: none;
+    }
+
+    .scene::before {
+      inset: -20%;
+      opacity: .44;
+      background: repeating-radial-gradient(ellipse at 50% 105%, transparent 0 8%, #a9b5a512 9% 12%, transparent 14% 21%);
+      filter: blur(28px);
+      animation: drift 24s ease-in-out infinite alternate;
+    }
+
+    .scene::after {
+      inset: 0;
+      opacity: .2;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.22'/%3E%3C/svg%3E");
+    }
+
+    .moon {
+      position: absolute;
+      top: 10%;
+      left: 50%;
+      width: clamp(110px, 17vw, 210px);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      transform: translateX(-50%);
+      background: radial-gradient(circle at 38% 35%, #f5efcf, #c8c8a9 64%, #a4ae9a);
+      box-shadow: 0 0 35px 12px #dce5c526, 0 0 110px 50px #cbd9c315;
+    }
+
+    .moon::after {
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      content: "";
+      background: radial-gradient(circle at 70% 22%, #77827424 0 7%, transparent 8%), radial-gradient(circle at 32% 65%, #77827424 0 10%, transparent 11%), radial-gradient(circle at 64% 72%, #77827420 0 5%, transparent 6%);
+    }
+
+    .headline {
+      z-index: 3;
+      margin: -7vh 1rem 0;
+      text-align: center;
+      text-shadow: 0 3px 25px #000, 0 0 50px #b4c29b35;
+      animation: appear 1.8s ease-out both;
+    }
+
+    .eyebrow {
+      margin: 0 0 .65rem;
+      color: #b6c09e;
+      font: 600 .72rem/1.5 system-ui, sans-serif;
+      letter-spacing: .42em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      color: #e7e2ce;
+      font-size: clamp(2.4rem, 8vw, 6.7rem);
+      font-weight: 400;
+      letter-spacing: .04em;
+      line-height: .96;
+      text-transform: uppercase;
+    }
+
+    .subtitle {
+      margin: 1rem 0 0;
+      color: #c3c4b1;
+      font-size: clamp(.9rem, 2vw, 1.15rem);
+      font-style: italic;
+      letter-spacing: .12em;
+    }
+
+    .fog {
+      position: absolute;
+      z-index: 2;
+      right: -15%;
+      bottom: 17%;
+      left: -15%;
+      height: 23%;
+      opacity: .42;
+      background: linear-gradient(180deg, transparent, #b5c2ad17 42%, #bbc4b51c 55%, transparent);
+      filter: blur(18px);
+      animation: drift 18s ease-in-out infinite alternate-reverse;
+    }
+
+    .ground {
+      position: absolute;
+      z-index: 1;
+      right: -5%;
+      bottom: -1px;
+      left: -5%;
+      height: 31%;
+      border-radius: 50% 50% 0 0 / 12% 12% 0 0;
+      background: linear-gradient(180deg, #1d271d 0%, #101710 56%, #090e0a 100%);
+      box-shadow: 0 -18px 40px #111a1640;
+    }
+
+    .grave {
+      position: absolute;
+      z-index: 2;
+      bottom: 13%;
+      width: clamp(28px, 5vw, 64px);
+      height: clamp(54px, 9vw, 112px);
+      border: 2px solid #080d0a;
+      border-bottom: 0;
+      border-radius: 48% 48% 4px 4px;
+      background: linear-gradient(90deg, #101710, #20271e 50%, #111710);
+      box-shadow: 8px 8px 0 #0c120d;
+      transform: rotate(-4deg);
+    }
+
+    .grave::after {
+      position: absolute;
+      top: 40%;
+      left: 0;
+      width: 100%;
+      content: "✝";
+      color: #65705a;
+      font-size: clamp(14px, 2vw, 23px);
+      text-align: center;
+    }
+
+    .grave.one { left: 13%; }
+    .grave.two { right: 14%; bottom: 10%; transform: rotate(5deg) scale(.8); }
+    .grave.three { right: 29%; bottom: 8%; transform: rotate(-8deg) scale(.65); }
+
+    .zombie {
+      position: absolute;
+      z-index: 2;
+      bottom: 12%;
+      width: clamp(58px, 10vw, 132px);
+      height: clamp(150px, 25vw, 310px);
+      color: #080d0a;
+      filter: drop-shadow(0 0 18px #98a28018);
+      transform-origin: bottom center;
+      animation: sway 5s ease-in-out infinite alternate;
+    }
+
+    .zombie.left { left: 28%; --tilt: -2deg; }
+    .zombie.right { right: 25%; transform: scaleX(-1); --tilt: 2deg; animation-delay: -2s; }
+
+    .head {
+      position: absolute;
+      top: 0;
+      left: 34%;
+      width: 35%;
+      height: 23%;
+      border-radius: 44% 47% 42% 42%;
+      background: #080d0a;
+    }
+
+    .head::before {
+      position: absolute;
+      top: 43%;
+      left: 14%;
+      width: 10%;
+      height: 7%;
+      border-radius: 50%;
+      content: "";
+      background: #ad4536;
+      box-shadow: 24px 2px 0 #ad4536, 12px 25px 0 -1px #ad4536;
+    }
+
+    .body {
+      position: absolute;
+      top: 20%;
+      left: 25%;
+      width: 54%;
+      height: 54%;
+      border-radius: 35% 35% 12% 12%;
+      background: #080d0a;
+      clip-path: polygon(21% 0, 79% 0, 100% 17%, 87% 45%, 92% 100%, 8% 100%, 13% 45%, 0 17%);
+    }
+
+    .arm {
+      position: absolute;
+      top: 22%;
+      width: 19%;
+      height: 49%;
+      border-radius: 40%;
+      background: #080d0a;
+      transform-origin: top center;
+    }
+
+    .arm.left-arm { left: 17%; transform: rotate(-47deg); }
+    .arm.right-arm { right: 13%; transform: rotate(56deg); }
+
+    .leg {
+      position: absolute;
+      top: 68%;
+      width: 22%;
+      height: 32%;
+      border-radius: 0 0 30% 30%;
+      background: #080d0a;
+    }
+
+    .leg.left-leg { left: 28%; transform: rotate(4deg); }
+    .leg.right-leg { right: 27%; transform: rotate(-7deg); }
+
+    .branch {
+      position: absolute;
+      z-index: 1;
+      top: 20%;
+      width: 4px;
+      height: 40%;
+      background: #090f0b;
+      transform: rotate(24deg);
+      transform-origin: bottom;
+    }
+
+    .branch::before, .branch::after {
+      position: absolute;
+      width: 3px;
+      height: 48%;
+      background: inherit;
+      content: "";
+      transform-origin: bottom;
+    }
+    .branch::before { top: 7%; left: -13px; transform: rotate(-48deg); }
+    .branch::after { top: 20%; left: 10px; transform: rotate(40deg); }
+    .branch.left-tree { left: 5%; }
+    .branch.right-tree { right: 5%; transform: rotate(-25deg) scale(1.2); }
+
+    @keyframes drift {
+      from { transform: translateX(-3%) translateY(0); }
+      to { transform: translateX(3%) translateY(-10px); }
+    }
+    @keyframes sway {
+      from { rotate: -1.5deg; }
+      to { rotate: 1.5deg; }
+    }
+    @keyframes appear {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 560px) {
+      .zombie.left { left: 15%; }
+      .zombie.right { right: 12%; }
+      .grave.one { left: 4%; }
+      .grave.two { right: 4%; }
+      .grave.three { right: 23%; }
+      .branch.left-tree { left: 1%; }
+      .branch.right-tree { right: 1%; }
+      .headline { margin-top: -12vh; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="scene" aria-label="A spooky zombie graveyard beneath a full moon">
+    <div class="moon" aria-hidden="true"></div>
+    <div class="branch left-tree" aria-hidden="true"></div>
+    <div class="branch right-tree" aria-hidden="true"></div>
+
+    <header class="headline">
+      <p class="eyebrow">Beware the night</p>
+      <h1>The Dead<br>Awaken</h1>
+      <p class="subtitle">Something stirs beneath the earth…</p>
+    </header>
+
+    <div class="fog" aria-hidden="true"></div>
+    <div class="ground" aria-hidden="true"></div>
+
+    <div class="grave one" aria-hidden="true"></div>
+    <div class="grave two" aria-hidden="true"></div>
+    <div class="grave three" aria-hidden="true"></div>
+
+    <div class="zombie left" aria-hidden="true">
+      <div class="head"></div><div class="body"></div>
+      <div class="arm left-arm"></div><div class="arm right-arm"></div>
+      <div class="leg left-leg"></div><div class="leg right-leg"></div>
+    </div>
+    <div class="zombie right" aria-hidden="true">
+      <div class="head"></div><div class="body"></div>
+      <div class="arm left-arm"></div><div class="arm right-arm"></div>
+      <div class="leg left-leg"></div><div class="leg right-leg"></div>
+    </div>
+  </main>
+</body>
+</html>
